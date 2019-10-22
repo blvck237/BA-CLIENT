@@ -3,9 +3,9 @@ import Button from '@material-ui/core/Button';
 
 import { buttonStyles } from '../../styles';
 
-const RectangularButton = ({ label }) => {
+const RectangularButton = ({ label, btnAction }) => {
   const classes = buttonStyles();
-  return <Button className={classes.rectangularButton}>{label}</Button>;
+  return <Button onClick={btnAction()} className={classes.rectangularButton}>{label}</Button>;
 };
 
 export default RectangularButton;
