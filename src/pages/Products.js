@@ -61,24 +61,26 @@ class Products extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    // LOAD DATA IN REDUX
     const { requestProducts } = this.props;
 
-    // this.fetchProducts();
+    this.fetchProducts();
     this.refreshProducts();
-    await requestProducts();
+    requestProducts();
   }
+
   render() {
     const {
       styles,
       modal,
       currentProduct,
       isEdit,
+      productList,
       isLoading,
       types,
     } = this.state;
 
-    const { productList } = this.props;
     return (
       <>
         <CssBaseline />

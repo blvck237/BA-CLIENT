@@ -65,28 +65,22 @@ const DataTable = ({ data, clickAction, isLoading }) => {
           </TableHead>
 
           <TableBody>
-            {Object.keys(data).map(key => (
-              <StyledTableRow
-                onClick={clickAction(data[key])}
-                key={data[key]._id}
-                hover
-              >
-                <StyledTableCell component="th" scope="data[key]">
-                  {data[key].name}
+            {data.map(row => (
+              <StyledTableRow onClick={clickAction(row)} key={row._id} hover>
+                <StyledTableCell component="th" scope="row">
+                  {row.name}
                 </StyledTableCell>
+                <StyledTableCell align="right">{row.type}</StyledTableCell>
+                <StyledTableCell align="right">{`${row.price} €`}</StyledTableCell>
                 <StyledTableCell align="right">
-                  {data[key].type}
+                  <Rating value={row.rating} readOnly />
+                  {`(${row.rating})`}
                 </StyledTableCell>
-                <StyledTableCell align="right">{`${data[key].price} €`}</StyledTableCell>
-                <StyledTableCell align="right">
-                  <Rating value={data[key].rating} readOnly />
-                  {`(${data[key].rating})`}
-                </StyledTableCell>
-                <StyledTableCell align="right">{`${data[key].warranty_years} ${
-                  data[key].warranty_years > 1 ? 'ans' : 'an'
+                <StyledTableCell align="right">{`${row.warranty_years} ${
+                  row.warranty_years > 1 ? 'ans' : 'an'
                 }`}</StyledTableCell>
                 <StyledTableCell align="right">{`${
-                  data[key].available ? 'Disponible' : 'Rupture'
+                  row.available ? 'Disponible' : 'Rupture'
                 }`}</StyledTableCell>
               </StyledTableRow>
             ))}
