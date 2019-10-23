@@ -50,7 +50,7 @@ class Products extends React.Component {
           backgroundColor: 'white',
         },
       },
-      types: [{ label: 'Phone', _id: 1 }, { label: 'PC', _id: 2 }],
+      types: [{ label: 'phone', _id: 1 }, { label: 'PC', _id: 2 }],
     };
   }
 
@@ -104,7 +104,9 @@ class Products extends React.Component {
           <Fade in={modal}>
             <Paper style={styles.modalContent}>
               <div>
-                <h2 id="modal-title">{isEdit ? 'Modifier ce produit' : 'Ajouter un produit'}</h2>
+                <h2 id="modal-title">
+                  {isEdit ? 'Modifier ce produit' : 'Ajouter un produit'}
+                </h2>
                 <p id="modal-description">Veuillez remplir tous les champs</p>
               </div>
 
@@ -151,7 +153,7 @@ class Products extends React.Component {
                       id="type"
                       label="Type"
                       value={currentProduct.type}
-                      helperText="Please select your currency"
+                      helperText="Choissisez le type de produit dans cette liste"
                       margin="normal"
                       onChange={this.onChange('type')}
                       select
@@ -174,19 +176,24 @@ class Products extends React.Component {
                   marginTop: 25,
                 }}
               >
-                {isEdit && (
+                {isEdit ? (
+                  <>
+                    <RectangularButton
+                      color="red"
+                      label="Supprimer"
+                      btnAction={this.deleteProduct}
+                    />
+                    <RectangularButton
+                      label="Mettre à jour"
+                      btnAction={() => this.updateProduct}
+                    />
+                  </>
+                ) : (
                   <RectangularButton
-                    icon="delete"
-                    color="red"
-                    label="Supprimer"
-                    btnAction={this.addProduct}
+                    label="Sauvegarder"
+                    btnAction={() => this.createProduct}
                   />
                 )}
-                <RectangularButton
-                  icon="save"
-                  label="Sauvegarder"
-                  btnAction={() => this.createProduct}
-                />
               </Box>
             </Paper>
           </Fade>
@@ -195,27 +202,7 @@ class Products extends React.Component {
     );
   }
 
-  fetchProducts = () => {
-    request({ url: '/products', method: 'GET' })
-      .then(res => {
-        if (res.status === 200) {
-          {
-            this.setState(state => ({
-              ...state,
-              productList: res.data.data,
-              isLoading: false,
-            }));
-            console.log('Log: Products -> fetchProducts -> res', res);
-          }
-        }
-      })
-      .catch(error => console.log('Error::Products::fetchProdicts', error))
-      .finally(() => this.setState(state => ({ ...state, isLoading: false })));
-  };
-
   onChange = name => event => {
-    console.log('Log: Products -> event', event);
-
     const { value } = event.target;
     this.setState(state => ({
       ...state,
@@ -223,28 +210,7 @@ class Products extends React.Component {
     }));
   };
 
-  createProduct = () => {
-    const { currentProduct } = this.state;
-    request({
-      url: '/products',
-      method: 'POST',
-      data: currentProduct,
-    }).then(res => {
-    console.log("Log: Products -> createProduct -> res", res)
-      if (res.status === 200) this.fetchProducts();
-    });
-  };
-
-  addProduct = () => () => {
-    this.setState(state => ({ ...state, modal: true, isEdit: false }));
-  };
-
-  editProduct = currentProduct => () => {
-    this.setState(state => ({ ...state, modal: true, isEdit: true, currentProduct }));
-  };
-
-  deleteProduct = () => {};
-
+  /** MODAL FUNCTIONS */
   openModal = () => {
     this.setState(state => ({ ...state, modal: true }));
   };
@@ -261,5 +227,76 @@ class Products extends React.Component {
     };
     this.setState(state => ({ ...state, modal: false, currentProduct }));
   };
+
+  addProduct = () => () => {
+    this.setState(state => ({ ...state, modal: true, isEdit: false }));
+  };
+
+  editProduct = currentProduct => () => {
+    this.setState(state => ({
+      ...state,
+      modal: true,
+      isEdit: true,
+      currentProduct,
+    }));
+  };
+
+  /** API CRUD FUNCTIONS */
+
+  fetchProducts = () => {
+    this.setState(state => ({
+      ...state,
+      isLoading: true,
+    }));
+    request({ url: '/products', method: 'GET' })
+      .then(res => {
+        if (res.status === 200) {
+          {
+            this.setState(state => ({
+              ...state,
+              productList: res.data.data,
+              isLoading: false,
+            }));
+          }
+        }
+      })
+      .catch(error => console.log('Error::Products::fetchProducts', error))
+      .finally(() => this.setState(state => ({ ...state, isLoading: false })));
+  };
+
+  createProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: '/products',
+      method: 'POST',
+      data: currentProduct,
+    })
+      .then(res => {
+        console.log('Log: Products -> createProduct -> res', res);
+        if (res.status === 200) {
+          this.setState(state => ({ ...state, modal: false }));
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:createProduct', err));
+  };
+
+  updateProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: `/products/${currentProduct._id}`,
+      method: 'PATCH',
+      data: currentProduct,
+    })
+      .then(res => {
+        if (res.status === 200) {
+          this.setState(state => ({ ...state, modal: false }));
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:updateProducts', err));
+  };
+
+  deleteProduct = () => {};
 }
 export default Products;
