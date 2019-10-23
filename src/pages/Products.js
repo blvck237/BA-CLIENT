@@ -29,6 +29,7 @@ class Products extends React.Component {
         available: true,
       },
       isEdit: false,
+      isLoading: true,
       productList: [
         {
           _id: 1,
@@ -88,7 +89,7 @@ class Products extends React.Component {
   }
 
   render() {
-    const { productList, styles, modal } = this.state;
+    const { productList, styles, modal, currentProduct, isEdit, isLoading, types } = this.state;
 
     return (
       <>
@@ -99,14 +100,14 @@ class Products extends React.Component {
               Gestion du stock
             </Typography>
 
-            <RectangularButton label="Ajouter un Produit" btnAction={() => this.addProduct} />
+            <RectangularButton label="Ajouter un Produit" btnAction={this.addProduct} />
           </Box>
-          <DataTable data={productList} clickAction={this.openModal} />
+          <DataTable isLoading={isLoading} data={productList} clickAction={this.editProduct} />
         </Container>
 
         <Modal
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
           open={modal}
           onClose={this.closeModal}
           style={styles.modal}
@@ -119,9 +120,10 @@ class Products extends React.Component {
           <Fade in={modal}>
             <Paper style={styles.modalContent}>
               <div>
-                <h2 id="transition-modal-title">Transition modal</h2>
-                <p id="transition-modal-description">react-transition-group animates me.</p>
+                <h2 id="modal-title">{isEdit ? 'Modifier ce produit' : 'Ajouter un produit'}</h2>
+                <p id="modal-description">Veuillez remplir tous les champs</p>
               </div>
+
               <form noValidate autoComplete="off">
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -180,6 +182,24 @@ class Products extends React.Component {
                   </Grid>
                 </Grid>
               </form>
+              <Box
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  marginTop: 25,
+                }}
+              >
+                {isEdit && (
+                  <RectangularButton
+                    icon="delete"
+                    color="red"
+                    label="Supprimer"
+                    btnAction={this.addProduct}
+                  />
+                )}
+                <RectangularButton icon="save" label="Sauvegarder" btnAction={this.addProduct} />
+              </Box>
             </Paper>
           </Fade>
         </Modal>
@@ -196,15 +216,32 @@ class Products extends React.Component {
       currentProduct: { ...state.currentProduct, [name]: value },
     }));
   };
+
+  addProduct = () => () => {
+    this.setState(state => ({ ...state, modal: true, isEdit: false }));
   };
 
-  openModal = currentProduct => () => {
-    console.log('Log: Products -> openModal -> currentProduct', currentProduct);
-    this.setState(state => ({ ...state, modal: true, currentProduct }));
+  editProduct = currentProduct => () => {
+    this.setState(state => ({ ...state, modal: true, isEdit: true, currentProduct }));
+  };
+
+  deleteProduct = () => {};
+
+  openModal = () => {
+    this.setState(state => ({ ...state, modal: true }));
   };
 
   closeModal = () => {
-    this.setState(state => ({ ...state, modal: false, currentProduct: {} }));
+    const currentProduct = {
+      _id: null,
+      name: '',
+      type: '',
+      price: 0,
+      rating: 0,
+      warranty_years: 0,
+      available: true,
+    };
+    this.setState(state => ({ ...state, modal: false, currentProduct }));
   };
 }
 export default Products;
