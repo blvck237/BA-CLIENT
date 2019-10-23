@@ -181,7 +181,7 @@ class Products extends React.Component {
                     <RectangularButton
                       color="red"
                       label="Supprimer"
-                      btnAction={this.deleteProduct}
+                      btnAction={() => this.deleteProduct}
                     />
                     <RectangularButton
                       label="Mettre à jour"
@@ -251,13 +251,11 @@ class Products extends React.Component {
     request({ url: '/products', method: 'GET' })
       .then(res => {
         if (res.status === 200) {
-          {
-            this.setState(state => ({
-              ...state,
-              productList: res.data.data,
-              isLoading: false,
-            }));
-          }
+          this.setState(state => ({
+            ...state,
+            productList: res.data.data,
+            isLoading: false,
+          }));
         }
       })
       .catch(error => console.log('Error::Products::fetchProducts', error))
@@ -297,6 +295,19 @@ class Products extends React.Component {
       .catch(err => console.log('Error::Products:updateProducts', err));
   };
 
-  deleteProduct = () => {};
+  deleteProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: `/products/${currentProduct._id}`,
+      method: 'DELETE',
+    })
+      .then(res => {
+        if (res.status === 200) {
+          this.setState(state => ({ ...state, modal: false }));
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:updateProducts', err));
+  };
 }
 export default Products;
