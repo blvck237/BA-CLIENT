@@ -6,7 +6,7 @@ export const requestProducts = () => (dispatch, getState) => {
     .then(response => {
       if (response.status === 200) {
         return Promise.resolve(
-          dispatch({ type: REQUEST_PRODUCTS, payload: response.data })
+          dispatch({ type: REQUEST_PRODUCTS, payload: response.data.data })
         );
       }
       return Promise.reject(new Error('Failed to get products'));
