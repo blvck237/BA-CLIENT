@@ -31,7 +31,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, combinedReducers);
 
 export default () => {
-  const store = createStore(persistedReducer, ['Use REdux'], compose(applyMiddleware(...middlewares)));
+  const store = createStore(persistedReducer, compose(applyMiddleware(...middlewares)));
 
   const persistor = persistStore(store);
 
