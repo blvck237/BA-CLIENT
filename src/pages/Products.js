@@ -14,6 +14,9 @@ import Grid from '@material-ui/core/Grid';
 import DataTable from '../components/DataTable';
 import RectangularButton from '../components/Buttons/RectangularButton';
 
+//API Import
+import { request } from '../api';
+
 class Products extends React.Component {
   constructor(props) {
     super(props);
@@ -30,44 +33,7 @@ class Products extends React.Component {
       },
       isEdit: false,
       isLoading: true,
-      productList: [
-        {
-          _id: 1,
-          name: 'AC1 Phone1',
-          type: 'phone',
-          price: 200.05,
-          rating: 3.8,
-          warranty_years: 1,
-          available: true,
-        },
-        {
-          _id: 2,
-          name: 'AC2 Phone2',
-          type: 'phone',
-          price: 147.21,
-          rating: 1,
-          warranty_years: 3,
-          available: false,
-        },
-        {
-          _id: 3,
-          name: 'AC3 Phone3',
-          type: 'phone',
-          price: 150,
-          rating: 2,
-          warranty_years: 1,
-          available: true,
-        },
-        {
-          _id: 4,
-          name: 'AC4 Phone4',
-          type: 'phone',
-          price: 50.2,
-          rating: 3,
-          warranty_years: 2,
-          available: true,
-        },
-      ],
+      productList: [],
       styles: {
         title: {
           fontSize: '3em',
@@ -84,12 +50,24 @@ class Products extends React.Component {
           backgroundColor: 'white',
         },
       },
-      types: [{ label: 'Phone', _id: 1 }, { label: 'PC', _id: 2 }],
+      types: [{ label: 'phone', _id: 1 }, { label: 'PC', _id: 2 }],
     };
   }
 
+  componentDidMount() {
+    this.fetchProducts();
+  }
+
   render() {
-    const { productList, styles, modal, currentProduct, isEdit, isLoading, types } = this.state;
+    const {
+      productList,
+      styles,
+      modal,
+      currentProduct,
+      isEdit,
+      isLoading,
+      types,
+    } = this.state;
 
     return (
       <>
@@ -99,10 +77,16 @@ class Products extends React.Component {
             <Typography style={styles.title} component="h1">
               Gestion du stock
             </Typography>
-
-            <RectangularButton label="Ajouter un Produit" btnAction={this.addProduct} />
+            <RectangularButton
+              label="Ajouter un Produit"
+              btnAction={this.addProduct}
+            />
           </Box>
-          <DataTable isLoading={isLoading} data={productList} clickAction={this.editProduct} />
+          <DataTable
+            isLoading={isLoading}
+            data={productList}
+            clickAction={this.editProduct}
+          />
         </Container>
 
         <Modal
@@ -120,7 +104,9 @@ class Products extends React.Component {
           <Fade in={modal}>
             <Paper style={styles.modalContent}>
               <div>
-                <h2 id="modal-title">{isEdit ? 'Modifier ce produit' : 'Ajouter un produit'}</h2>
+                <h2 id="modal-title">
+                  {isEdit ? 'Modifier ce produit' : 'Ajouter un produit'}
+                </h2>
                 <p id="modal-description">Veuillez remplir tous les champs</p>
               </div>
 
@@ -167,14 +153,14 @@ class Products extends React.Component {
                       id="type"
                       label="Type"
                       value={currentProduct.type}
-                      helperText="Please select your currency"
+                      helperText="Choissisez le type de produit dans cette liste"
                       margin="normal"
                       onChange={this.onChange('type')}
                       select
                       required
                     >
                       {types.map(option => (
-                        <MenuItem key={option._id} value={option._id}>
+                        <MenuItem key={option._id} value={option.label}>
                           {option.label}
                         </MenuItem>
                       ))}
@@ -190,15 +176,24 @@ class Products extends React.Component {
                   marginTop: 25,
                 }}
               >
-                {isEdit && (
+                {isEdit ? (
+                  <>
+                    <RectangularButton
+                      color="red"
+                      label="Supprimer"
+                      btnAction={() => this.deleteProduct}
+                    />
+                    <RectangularButton
+                      label="Mettre à jour"
+                      btnAction={() => this.updateProduct}
+                    />
+                  </>
+                ) : (
                   <RectangularButton
-                    icon="delete"
-                    color="red"
-                    label="Supprimer"
-                    btnAction={this.addProduct}
+                    label="Sauvegarder"
+                    btnAction={() => this.createProduct}
                   />
                 )}
-                <RectangularButton icon="save" label="Sauvegarder" btnAction={this.addProduct} />
               </Box>
             </Paper>
           </Fade>
@@ -208,8 +203,6 @@ class Products extends React.Component {
   }
 
   onChange = name => event => {
-    console.log('Log: Products -> event', event);
-
     const { value } = event.target;
     this.setState(state => ({
       ...state,
@@ -217,16 +210,7 @@ class Products extends React.Component {
     }));
   };
 
-  addProduct = () => () => {
-    this.setState(state => ({ ...state, modal: true, isEdit: false }));
-  };
-
-  editProduct = currentProduct => () => {
-    this.setState(state => ({ ...state, modal: true, isEdit: true, currentProduct }));
-  };
-
-  deleteProduct = () => {};
-
+  /** MODAL FUNCTIONS */
   openModal = () => {
     this.setState(state => ({ ...state, modal: true }));
   };
@@ -241,7 +225,89 @@ class Products extends React.Component {
       warranty_years: 0,
       available: true,
     };
-    this.setState(state => ({ ...state, modal: false, currentProduct }));
+    this.setState(state => ({ ...state, currentProduct, modal: false }));
+  };
+
+  addProduct = () => () => {
+    this.setState(state => ({ ...state, modal: true, isEdit: false }));
+  };
+
+  editProduct = currentProduct => () => {
+    this.setState(state => ({
+      ...state,
+      modal: true,
+      isEdit: true,
+      currentProduct,
+    }));
+  };
+
+  /** API CRUD FUNCTIONS */
+
+  fetchProducts = () => {
+    this.setState(state => ({
+      ...state,
+      isLoading: true,
+    }));
+    request({ url: '/products', method: 'GET' })
+      .then(res => {
+        if (res.status === 200) {
+          this.setState(state => ({
+            ...state,
+            productList: res.data.data,
+            isLoading: false,
+          }));
+        }
+      })
+      .catch(error => console.log('Error::Products::fetchProducts', error))
+      .finally(() => this.setState(state => ({ ...state, isLoading: false })));
+  };
+
+  createProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: '/products',
+      method: 'POST',
+      data: currentProduct,
+    })
+      .then(res => {
+        console.log('Log: Products -> createProduct -> res', res);
+        if (res.status === 200) {
+          this.closeModal();
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:createProduct', err));
+  };
+
+  updateProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: `/products/${currentProduct._id}`,
+      method: 'PATCH',
+      data: currentProduct,
+    })
+      .then(res => {
+        if (res.status === 200) {
+          this.closeModal();
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:updateProducts', err));
+  };
+
+  deleteProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: `/products/${currentProduct._id}`,
+      method: 'DELETE',
+    })
+      .then(res => {
+        if (res.status === 200) {
+          this.closeModal();
+          this.fetchProducts();
+        }
+      })
+      .catch(err => console.log('Error::Products:updateProducts', err));
   };
 }
 export default Products;
