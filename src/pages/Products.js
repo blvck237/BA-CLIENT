@@ -114,10 +114,16 @@ class Products extends React.Component {
             <Typography style={styles.title} component="h1">
               Gestion du stock
             </Typography>
-
-            <RectangularButton label="Ajouter un Produit" btnAction={this.addProduct} />
+            <RectangularButton
+              label="Ajouter un Produit"
+              btnAction={this.addProduct}
+            />
           </Box>
-          <DataTable isLoading={isLoading} data={productList} clickAction={this.editProduct} />
+          <DataTable
+            isLoading={isLoading}
+            data={productList}
+            clickAction={this.editProduct}
+          />
         </Container>
 
         <Modal
@@ -189,7 +195,7 @@ class Products extends React.Component {
                       required
                     >
                       {types.map(option => (
-                        <MenuItem key={option._id} value={option._id}>
+                        <MenuItem key={option._id} value={option.label}>
                           {option.label}
                         </MenuItem>
                       ))}
@@ -213,7 +219,11 @@ class Products extends React.Component {
                     btnAction={this.addProduct}
                   />
                 )}
-                <RectangularButton icon="save" label="Sauvegarder" btnAction={this.addProduct} />
+                <RectangularButton
+                  icon="save"
+                  label="Sauvegarder"
+                  btnAction={() => this.createProduct}
+                />
               </Box>
             </Paper>
           </Fade>
@@ -248,6 +258,18 @@ class Products extends React.Component {
       ...state,
       currentProduct: { ...state.currentProduct, [name]: value },
     }));
+  };
+
+  createProduct = () => {
+    const { currentProduct } = this.state;
+    request({
+      url: '/products',
+      method: 'POST',
+      data: currentProduct,
+    }).then(res => {
+    console.log("Log: Products -> createProduct -> res", res)
+      if (res.status === 200) this.fetchProducts();
+    });
   };
 
   addProduct = () => () => {
