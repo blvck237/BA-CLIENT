@@ -3,10 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-// ROUTER
-import Navigation from './components/Navigation';
+import App from './App'
 
-const routing = <Navigation />;
+const routing = <App />;
 
 ReactDOM.render(routing, document.getElementById('root'));
 
