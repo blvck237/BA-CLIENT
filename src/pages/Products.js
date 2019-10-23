@@ -14,6 +14,9 @@ import Grid from '@material-ui/core/Grid';
 import DataTable from '../components/DataTable';
 import RectangularButton from '../components/Buttons/RectangularButton';
 
+//API Import
+import { request } from '../api';
+
 class Products extends React.Component {
   constructor(props) {
     super(props);
@@ -88,8 +91,20 @@ class Products extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.fetchProducts();
+  }
+
   render() {
-    const { productList, styles, modal, currentProduct, isEdit, isLoading, types } = this.state;
+    const {
+      productList,
+      styles,
+      modal,
+      currentProduct,
+      isEdit,
+      isLoading,
+      types,
+    } = this.state;
 
     return (
       <>
@@ -206,6 +221,24 @@ class Products extends React.Component {
       </>
     );
   }
+
+  fetchProducts = () => {
+    request({ url: '/products', method: 'GET' })
+      .then(res => {
+        if (res.status === 200) {
+          {
+            this.setState(state => ({
+              ...state,
+              productList: res.data.data,
+              isLoading: false,
+            }));
+            console.log('Log: Products -> fetchProducts -> res', res);
+          }
+        }
+      })
+      .catch(error => console.log('Error::Products::fetchProdicts', error))
+      .finally(() => this.setState(state => ({ ...state, isLoading: false })));
+  };
 
   onChange = name => event => {
     console.log('Log: Products -> event', event);
