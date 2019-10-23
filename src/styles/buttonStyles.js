@@ -9,6 +9,7 @@ const buttonStyles = makeStyles(theme=>({
     color: 'white',
     height: 48,
     padding: '0.5em 1.5em',
+    margin: 10,
   },
 }));
 
