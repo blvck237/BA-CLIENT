@@ -3,7 +3,7 @@ import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
 
 // ROUTER
 import App from '../App';
-import Home from '../pages/Home';
+import Login from '../pages/Login';
 import Products from '../pages/Products';
 import Notfound from '../pages/Notfound';
 
@@ -17,7 +17,7 @@ class Navigation extends React.Component {
               <Link to="/">App</Link>
             </li>
             <li>
-              <Link to="/home">Home</Link>
+              <Link to="/login">Login</Link>
             </li>
             <li>
               <Link to="/products">Products</Link>
@@ -25,7 +25,7 @@ class Navigation extends React.Component {
           </ul>
           <Switch>
             <Route exact path="/" component={App} />
-            <Route path="/home" component={Home} />
+            <Route path="/login" component={Login} />
             <Route path="/products" component={Products} />
             <Route component={Notfound} />
           </Switch>
