@@ -1,4 +1,4 @@
 /**
  * [Products]
  */
-export const productSelector = state => state.productList;
+export const productSelector = state => state.products;
