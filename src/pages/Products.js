@@ -1,4 +1,6 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -56,6 +58,7 @@ class Products extends React.Component {
 
   componentDidMount() {
     this.fetchProducts();
+    this.refreshProducts();
   }
 
   render() {
@@ -308,6 +311,15 @@ class Products extends React.Component {
         }
       })
       .catch(err => console.log('Error::Products:updateProducts', err));
+  };
+
+  /** Socket IO */
+
+  refreshProducts = () => {
+    const socket = socketIOClient.connect('http://localhost/');
+    socket.on('refreshProducts', data => {
+      this.setState({ productList: data });
+    });
   };
 }
 export default Products;
