@@ -19,6 +19,11 @@ import RectangularButton from '../components/Buttons/RectangularButton';
 //API Import
 import { request } from '../api';
 
+// REDUX Import
+import { connect } from 'react-redux';
+import { requestProducts } from '../redux/actions/actions';
+import { productSelector } from '../redux/selectors';
+
 class Products extends React.Component {
   constructor(props) {
     super(props);
@@ -56,14 +61,15 @@ class Products extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.fetchProducts();
-    this.refreshProducts();
-  }
+  async componentDidMount() {
+    const { requestProducts } = this.props;
 
+    // this.fetchProducts();
+    this.refreshProducts();
+    await requestProducts();
+  }
   render() {
     const {
-      productList,
       styles,
       modal,
       currentProduct,
@@ -72,6 +78,7 @@ class Products extends React.Component {
       types,
     } = this.state;
 
+    const { productList } = this.props;
     return (
       <>
         <CssBaseline />
@@ -273,7 +280,6 @@ class Products extends React.Component {
       data: currentProduct,
     })
       .then(res => {
-        console.log('Log: Products -> createProduct -> res', res);
         if (res.status === 200) {
           this.closeModal();
           this.fetchProducts();
@@ -322,4 +328,14 @@ class Products extends React.Component {
     });
   };
 }
-export default Products;
+
+const mapStateToProps = state => {
+  return {
+    productList: productSelector(state),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { requestProducts }
+)(Products);
