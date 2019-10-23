@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import socketIOClient from 'socket.io-client';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -341,3 +342,7 @@ export default connect(
   mapStateToProps,
   { requestProducts }
 )(Products);
+
+Products.propTypes = {
+  requestProducts: PropTypes.func.isRequired,
+};
