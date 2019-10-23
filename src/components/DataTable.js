@@ -7,7 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Rating from '@material-ui/lab/Rating';
-
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const StyledTableCell = withStyles(theme => ({
   head: {
@@ -36,14 +36,22 @@ const useStyles = makeStyles(theme => ({
   table: {
     minWidth: 700,
   },
+  progressBar: {
+    flexGrow: 1,
+  },
 }));
 
-const DataTable = ({ data, clickAction }) => {
+const DataTable = ({ data, clickAction, isLoading }) => {
   const classes = useStyles();
 
   return (
     <>
       <Paper className={classes.root}>
+        {isLoading && (
+          <div className={classes.progressBar}>
+            <LinearProgress />
+          </div>
+        )}
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -55,6 +63,7 @@ const DataTable = ({ data, clickAction }) => {
               <StyledTableCell align="right">Statut</StyledTableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {data.map(row => (
               <StyledTableRow onClick={clickAction(row)} key={row._id} hover>
