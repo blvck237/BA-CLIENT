@@ -225,7 +225,7 @@ class Products extends React.Component {
       warranty_years: 0,
       available: true,
     };
-    this.setState(state => ({ ...state, modal: false, currentProduct }));
+    this.setState(state => ({ ...state, currentProduct, modal: false }));
   };
 
   addProduct = () => () => {
@@ -272,7 +272,7 @@ class Products extends React.Component {
       .then(res => {
         console.log('Log: Products -> createProduct -> res', res);
         if (res.status === 200) {
-          this.setState(state => ({ ...state, modal: false }));
+          this.closeModal();
           this.fetchProducts();
         }
       })
@@ -288,7 +288,7 @@ class Products extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
-          this.setState(state => ({ ...state, modal: false }));
+          this.closeModal();
           this.fetchProducts();
         }
       })
@@ -303,7 +303,7 @@ class Products extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
-          this.setState(state => ({ ...state, modal: false }));
+          this.closeModal();
           this.fetchProducts();
         }
       })
