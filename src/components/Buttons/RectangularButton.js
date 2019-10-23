@@ -21,7 +21,7 @@ const RectangularButton = ({ label, btnAction, color }) => {
 export default RectangularButton;
 
 RectangularButton.defaultProps = {
-  color: 'blue',
+  color: '',
   label: '',
 };
 
