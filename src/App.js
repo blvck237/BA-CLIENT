@@ -1,27 +1,33 @@
 import React from 'react';
 import 'typeface-roboto';
-import logo from './logo.svg';
+
+// ROUTER
+import Navigation from './components/Navigation';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// REDUX IMPORTS
+import configureStore from './redux/store';
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import { Provider } from 'react-redux';
+
+const { store, persistor } = configureStore();
+console.log('Log: store', store);
+
+class App extends React.Component {
+  state = {
+    isLoading: true,
+  };
+
+  render() {
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor} loading={null}>
+          <Navigation />
+        </PersistGate>
+      </Provider>
+    );
+  }
 }
 
 export default App;
