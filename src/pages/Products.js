@@ -78,7 +78,9 @@ class Products extends React.Component {
           justifyContent: 'center',
         },
         modalContent: {
-          padding: 50,
+          padding: '2em 4em 3em',
+          border: 'none',
+          backgroundColor: 'white',
         },
       },
       types: [{ label: 'Phone', _id: 1 }, { label: 'PC', _id: 2 }],
