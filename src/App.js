@@ -12,7 +12,6 @@ import { PersistGate } from 'redux-persist/lib/integration/react';
 import { Provider } from 'react-redux';
 
 const { store, persistor } = configureStore();
-console.log('Log: store', store);
 
 class App extends React.Component {
   state = {
