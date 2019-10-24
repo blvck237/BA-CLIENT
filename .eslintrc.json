@@ -18,19 +18,10 @@
     "react/no-array-index-key": 0,
     "camelcase": 0
   },
-  "globals": {
-    "fetch": true,
-    "__DEV__": true,
-    "window": true
-  },
-  "env": {
-    "jest": true
-  },
   "parser": "babel-eslint",
   "settings": {
     "import/resolver": {
-      "babel-module": {},
-      "react-native": {}
+      "babel-module": {}
     }
   }
 }
