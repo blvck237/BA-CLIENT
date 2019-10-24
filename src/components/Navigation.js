@@ -1,5 +1,12 @@
 import React from 'react';
-import { Route, Link, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
+
+import Box from '@material-ui/core/Box';
 
 // ROUTER
 import Login from '../pages/Login';
@@ -19,15 +26,7 @@ class Navigation extends React.Component {
 
     return (
       <Router>
-        <div>
-          <ul>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/products">Products</Link>
-            </li>
-          </ul>
+        <Box my={30}>
           <Switch>
             <Route exact path="/" component={Login} />
             {isAuth ? (
@@ -37,10 +36,10 @@ class Navigation extends React.Component {
                 <Route component={Notfound} />
               </>
             ) : (
-              <Redirect to='/' />
+              <Redirect to="/" />
             )}
           </Switch>
-        </div>
+        </Box>
       </Router>
     );
   }
