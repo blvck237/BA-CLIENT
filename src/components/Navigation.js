@@ -29,7 +29,7 @@ class Navigation extends React.Component {
 
     return (
       <Router>
-        <Box my={30}>
+        <Box my={10}>
           <Switch>
             <Route exact path="/" component={Login} />
             {isAuth ? (
