@@ -11,11 +11,19 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
+import PropTypes from 'prop-types';
+import { requestLogin, requestLogout } from '../redux/actions/accountActions';
+import { connect } from 'react-redux';
+import { tokenSelector } from '../redux/selectors';
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      form: { email: '', password: '' },
+      form: {
+        email: '', // jfokoua@gmail.com
+        password: '', // test0000
+      },
       rememberMe: false,
       style: {
         paper: {
@@ -40,7 +48,7 @@ class Login extends React.Component {
   }
 
   render() {
-    const { style, email, password, rememberMe } = this.state;
+    const { style, form, rememberMe } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
@@ -62,7 +70,7 @@ class Login extends React.Component {
               label="Email"
               name="email"
               autoComplete="email"
-              value={email}
+              value={form.email}
               autoFocus
               onChange={this.onChange('email')}
             />
@@ -75,7 +83,7 @@ class Login extends React.Component {
               label="Mot de Passe"
               type="password"
               id="password"
-              value={password}
+              value={form.password}
               autoComplete="current-password"
               onChange={this.onChange('password')}
             />
@@ -84,11 +92,12 @@ class Login extends React.Component {
               label="Se souvenir de moi"
             />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               color="primary"
               style={style.submit}
+              onClick={this.signIn}
+              disabled={this.checkForm()}
             >
               Connexion
             </Button>
@@ -110,6 +119,35 @@ class Login extends React.Component {
     );
   }
 
+  signIn = () => {
+    const { form } = this.state;
+    const { requestLogin, history } = this.props;
+    requestLogin({ email: form.email, password: form.password }).then(() => {
+      console.log('Auth');
+      history.push('/products');
+    });
+  };
+
+  signOut = () => {
+    const { requestLogout } = this.props;
+    requestLogout().then(() => {
+      console.log('Not Auth');
+    });
+  };
+
+  checkForm = () => {
+    const { form } = this.state;
+    let bool = false;
+
+    Object.keys(form).map(key => {
+      if (form[key] === '') {
+        bool = true;
+        return bool;
+      }
+    });
+    return bool;
+  };
+
   onChange = name => event => {
     const { value } = event.target;
     this.setState(state => ({
@@ -119,4 +157,18 @@ class Login extends React.Component {
   };
 }
 
-export default Login;
+const mapStateToProps = state => {
+  return {
+    token: tokenSelector(state),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { requestLogin, requestLogout }
+)(Login);
+
+Login.propTypes = {
+  requestLogin: PropTypes.func.isRequired,
+  requestLogout: PropTypes.func.isRequired,
+};
