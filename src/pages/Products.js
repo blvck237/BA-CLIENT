@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import socketIOClient from 'socket.io-client';
 
+import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -24,6 +25,7 @@ import { protectedRequest } from '../api';
 import { connect } from 'react-redux';
 import { requestProducts } from '../redux/actions/actions';
 import { productSelector } from '../redux/selectors';
+import { requestLogout } from '../redux/actions/accountActions';
 
 class Products extends React.Component {
   constructor(props) {
@@ -86,6 +88,20 @@ class Products extends React.Component {
       <>
         <CssBaseline />
         <Container maxWidth="lg">
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              marginBottom: 50,
+            }}
+          >
+            <RectangularButton
+              color="red"
+              label="Deconnexion"
+              btnAction={() => this.signOut}
+            />
+          </Box>
           <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography style={styles.title} component="h1">
               Gestion du stock
@@ -216,6 +232,14 @@ class Products extends React.Component {
       </>
     );
   }
+
+  signOut = () => {
+    const { requestLogout, history } = this.props;
+    requestLogout().then(() => {
+      console.log('Not Auth');
+      history.push('/');
+    });
+  };
 
   checkForm = () => {
     const { currentProduct } = this.state;
@@ -355,9 +379,10 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { requestProducts }
+  { requestProducts, requestLogout }
 )(Products);
 
 Products.propTypes = {
   requestProducts: PropTypes.func.isRequired,
+  requestLogout: PropTypes.func.isRequired,
 };
