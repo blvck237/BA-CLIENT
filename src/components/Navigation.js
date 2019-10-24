@@ -1,37 +1,56 @@
 import React from 'react';
-import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
+
+import Box from '@material-ui/core/Box';
 
 // ROUTER
-import App from '../App';
 import Login from '../pages/Login';
 import Products from '../pages/Products';
 import Notfound from '../pages/Notfound';
 
+import { connect } from 'react-redux';
+import { isAuthSelector } from '../redux/selectors';
+
 class Navigation extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isAuth: false,
+    };
+  }
+
   render() {
+    const { isAuth } = this.props;
+
     return (
       <Router>
-        <div>
-          <ul>
-            <li>
-              <Link to="/">App</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/products">Products</Link>
-            </li>
-          </ul>
+        <Box my={10}>
           <Switch>
-            <Route exact path="/" component={App} />
-            <Route path="/login" component={Login} />
-            <Route path="/products" component={Products} />
-            <Route component={Notfound} />
+            <Route exact path="/" component={Login} />
+            {isAuth ? (
+              <>
+                <Route path="/products" component={Products} />
+              </>
+            ) : (
+              <Redirect to="/" />
+            )}
           </Switch>
-        </div>
+        </Box>
       </Router>
     );
   }
 }
-export default Navigation;
+
+const mapStateToProps = state => {
+  return {
+    isAuth: isAuthSelector(state),
+  };
+};
+
+export default connect(mapStateToProps)(Navigation);
+

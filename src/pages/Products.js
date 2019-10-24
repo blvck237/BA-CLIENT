@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import socketIOClient from 'socket.io-client';
 
+import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -18,12 +19,13 @@ import DataTable from '../components/DataTable';
 import RectangularButton from '../components/Buttons/RectangularButton';
 
 //API Import
-import { request } from '../api';
+import { protectedRequest } from '../api';
 
 // REDUX Import
 import { connect } from 'react-redux';
 import { requestProducts } from '../redux/actions/actions';
 import { productSelector } from '../redux/selectors';
+import { requestLogout } from '../redux/actions/accountActions';
 
 class Products extends React.Component {
   constructor(props) {
@@ -86,6 +88,20 @@ class Products extends React.Component {
       <>
         <CssBaseline />
         <Container maxWidth="lg">
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              marginBottom: 50,
+            }}
+          >
+            <RectangularButton
+              color="red"
+              label="Deconnexion"
+              btnAction={() => this.signOut}
+            />
+          </Box>
           <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography style={styles.title} component="h1">
               Gestion du stock
@@ -217,6 +233,14 @@ class Products extends React.Component {
     );
   }
 
+  signOut = () => {
+    const { requestLogout, history } = this.props;
+    requestLogout().then(() => {
+      console.log('Not Auth');
+      history.push('/');
+    });
+  };
+
   checkForm = () => {
     const { currentProduct } = this.state;
     let bool = false;
@@ -276,7 +300,7 @@ class Products extends React.Component {
       ...state,
       isLoading: true,
     }));
-    request({ url: '/products', method: 'GET' })
+    protectedRequest({ url: '/products', method: 'GET' })
       .then(res => {
         if (res.status === 200) {
           this.setState(state => ({
@@ -292,7 +316,7 @@ class Products extends React.Component {
 
   createProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: '/products',
       method: 'POST',
       data: currentProduct,
@@ -308,7 +332,7 @@ class Products extends React.Component {
 
   updateProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: `/products/${currentProduct._id}`,
       method: 'PATCH',
       data: currentProduct,
@@ -324,7 +348,7 @@ class Products extends React.Component {
 
   deleteProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: `/products/${currentProduct._id}`,
       method: 'DELETE',
     })
@@ -355,9 +379,10 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { requestProducts }
+  { requestProducts, requestLogout }
 )(Products);
 
 Products.propTypes = {
   requestProducts: PropTypes.func.isRequired,
+  requestLogout: PropTypes.func.isRequired,
 };

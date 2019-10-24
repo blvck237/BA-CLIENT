@@ -5,7 +5,7 @@ const defaultHeaders = {
 };
 
 const config = {
-  baseURL: "http://localhost:3000",
+  baseURL: 'http://localhost:3000',
   timeout: 60000,
   headers: defaultHeaders,
 };
@@ -13,18 +13,17 @@ const config = {
 const request = axios.create(config);
 
 const protectedRequest = options => {
-  return localStorage.getItem('token').then(token => {
-    if (token) {
-      return request({
-        headers: {
-          ...defaultHeaders,
-          Authorization: `Bearer ${token}`,
-        },
-        ...options,
-      });
-    }
-    return new Error('NO_TOKEN');
-  });
+  const token = localStorage.getItem('token');
+  if (token) {
+    return request({
+      headers: {
+        ...defaultHeaders,
+        Authorization: `Bearer ${token}`,
+      },
+      ...options,
+    });
+  }
+  return new Error('NO_TOKEN');
 };
 
 export { request, protectedRequest };

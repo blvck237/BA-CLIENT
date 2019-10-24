@@ -26,6 +26,7 @@ middlewares.push(logger);
 const persistConfig = {
   key: 'ba-client',
   storage,
+  blacklist: ['products']
 };
 
 const persistedReducer = persistReducer(persistConfig, combinedReducers);

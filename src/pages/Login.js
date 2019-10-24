@@ -11,12 +11,20 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
+import PropTypes from 'prop-types';
+import { requestLogin, requestLogout } from '../redux/actions/accountActions';
+import { connect } from 'react-redux';
+import { tokenSelector } from '../redux/selectors';
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
+      form: {
+        email: '', // jfokoua@gmail.com
+        password: '', // test0000
+      },
+      rememberMe: false,
       style: {
         paper: {
           marginTop: 8,
@@ -33,26 +41,26 @@ class Login extends React.Component {
           marginTop: 10,
         },
         submit: {
-          margin: 20,
+          marginTop: 10,
         },
       },
     };
   }
 
   render() {
-    const { style } = this.state;
+    const { style, form, rememberMe } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div className={style.paper}>
-          <Avatar className={style.avatar}>
+        <div style={style.paper}>
+          <Avatar style={style.avatar}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Connexion
           </Typography>
-          <form className={style.form} noValidate>
+          <form style={style.form} noValidate>
             <TextField
               variant="outlined"
               margin="normal"
@@ -62,7 +70,9 @@ class Login extends React.Component {
               label="Email"
               name="email"
               autoComplete="email"
+              value={form.email}
               autoFocus
+              onChange={this.onChange('email')}
             />
             <TextField
               variant="outlined"
@@ -73,18 +83,21 @@ class Login extends React.Component {
               label="Mot de Passe"
               type="password"
               id="password"
+              value={form.password}
               autoComplete="current-password"
+              onChange={this.onChange('password')}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value={rememberMe} color="primary" />}
               label="Se souvenir de moi"
             />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               color="primary"
-              className={style.submit}
+              style={style.submit}
+              onClick={this.signIn}
+              disabled={this.checkForm()}
             >
               Connexion
             </Button>
@@ -105,6 +118,57 @@ class Login extends React.Component {
       </Container>
     );
   }
+
+  signIn = () => {
+    const { form } = this.state;
+    const { requestLogin, history } = this.props;
+    requestLogin({ email: form.email, password: form.password }).then(() => {
+      console.log('Auth');
+      history.push('/products');
+    });
+  };
+
+  signOut = () => {
+    const { requestLogout } = this.props;
+    requestLogout().then(() => {
+      console.log('Not Auth');
+    });
+  };
+
+  checkForm = () => {
+    const { form } = this.state;
+    let bool = false;
+
+    Object.keys(form).map(key => {
+      if (form[key] === '') {
+        bool = true;
+        return bool;
+      }
+    });
+    return bool;
+  };
+
+  onChange = name => event => {
+    const { value } = event.target;
+    this.setState(state => ({
+      ...state,
+      form: { ...state.form, [name]: value },
+    }));
+  };
 }
 
-export default Login;
+const mapStateToProps = state => {
+  return {
+    token: tokenSelector(state),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { requestLogin, requestLogout }
+)(Login);
+
+Login.propTypes = {
+  requestLogin: PropTypes.func.isRequired,
+  requestLogout: PropTypes.func.isRequired,
+};

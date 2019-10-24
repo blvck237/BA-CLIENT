@@ -1,8 +1,8 @@
-import { request } from '../../api';
+import { protectedRequest } from '../../api';
 import { REQUEST_PRODUCTS } from './actionTypes';
 
 export const requestProducts = () => (dispatch, getState) => {
-  return request({ url: '/products', method: 'GET' })
+  return protectedRequest({ url: '/products', method: 'GET' })
     .then(response => {
       if (response.status === 200) {
         return Promise.resolve(
