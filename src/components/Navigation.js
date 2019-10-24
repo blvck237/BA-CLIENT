@@ -34,9 +34,7 @@ class Navigation extends React.Component {
             <Route exact path="/" component={Login} />
             {isAuth ? (
               <>
-                <Route path="/login" component={Login} />
                 <Route path="/products" component={Products} />
-                <Route component={Notfound} />
               </>
             ) : (
               <Redirect to="/" />
