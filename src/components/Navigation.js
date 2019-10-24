@@ -13,6 +13,9 @@ import Login from '../pages/Login';
 import Products from '../pages/Products';
 import Notfound from '../pages/Notfound';
 
+import { connect } from 'react-redux';
+import { isAuthSelector } from '../redux/selectors';
+
 class Navigation extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +25,7 @@ class Navigation extends React.Component {
   }
 
   render() {
-    const { isAuth } = this.state;
+    const { isAuth } = this.props;
 
     return (
       <Router>
@@ -44,4 +47,12 @@ class Navigation extends React.Component {
     );
   }
 }
-export default Navigation;
+
+const mapStateToProps = state => {
+  return {
+    isAuth: isAuthSelector(state),
+  };
+};
+
+export default connect(mapStateToProps)(Navigation);
+
