@@ -15,7 +15,8 @@ const account = (state = initialState, action) => {
       localStorage.setItem('token', '');
       return {
         ...state,
-        account: {},
+        user: {},
+        token: '',
         isAuth: false,
       };
 
