@@ -15,8 +15,8 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
+      form: { email: '', password: '' },
+      rememberMe: false,
       style: {
         paper: {
           marginTop: 8,
@@ -33,26 +33,26 @@ class Login extends React.Component {
           marginTop: 10,
         },
         submit: {
-          margin: 20,
+          marginTop: 10,
         },
       },
     };
   }
 
   render() {
-    const { style } = this.state;
+    const { style, email, password, rememberMe } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div className={style.paper}>
-          <Avatar className={style.avatar}>
+        <div style={style.paper}>
+          <Avatar style={style.avatar}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Connexion
           </Typography>
-          <form className={style.form} noValidate>
+          <form style={style.form} noValidate>
             <TextField
               variant="outlined"
               margin="normal"
@@ -62,7 +62,9 @@ class Login extends React.Component {
               label="Email"
               name="email"
               autoComplete="email"
+              value={email}
               autoFocus
+              onChange={this.onChange('email')}
             />
             <TextField
               variant="outlined"
@@ -73,10 +75,12 @@ class Login extends React.Component {
               label="Mot de Passe"
               type="password"
               id="password"
+              value={password}
               autoComplete="current-password"
+              onChange={this.onChange('password')}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value={rememberMe} color="primary" />}
               label="Se souvenir de moi"
             />
             <Button
@@ -84,7 +88,7 @@ class Login extends React.Component {
               fullWidth
               variant="contained"
               color="primary"
-              className={style.submit}
+              style={style.submit}
             >
               Connexion
             </Button>
@@ -105,6 +109,14 @@ class Login extends React.Component {
       </Container>
     );
   }
+
+  onChange = name => event => {
+    const { value } = event.target;
+    this.setState(state => ({
+      ...state,
+      form: { ...state.form, [name]: value },
+    }));
+  };
 }
 
 export default Login;
