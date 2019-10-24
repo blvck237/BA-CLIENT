@@ -199,12 +199,14 @@ class Products extends React.Component {
                     <RectangularButton
                       label="Mettre à jour"
                       btnAction={() => this.updateProduct}
+                      disabled={this.checkForm()}
                     />
                   </>
                 ) : (
                   <RectangularButton
                     label="Sauvegarder"
                     btnAction={() => this.createProduct}
+                    disabled={this.checkForm()}
                   />
                 )}
               </Box>
@@ -214,6 +216,19 @@ class Products extends React.Component {
       </>
     );
   }
+
+  checkForm = () => {
+    const { currentProduct } = this.state;
+    let bool = false;
+
+    Object.keys(currentProduct).map(key => {
+      if (currentProduct[key] === '') {
+        bool = true;
+        return bool;
+      }
+    });
+    return bool;
+  };
 
   onChange = name => event => {
     const { value } = event.target;
