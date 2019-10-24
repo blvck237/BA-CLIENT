@@ -18,7 +18,7 @@ import DataTable from '../components/DataTable';
 import RectangularButton from '../components/Buttons/RectangularButton';
 
 //API Import
-import { request } from '../api';
+import { protectedRequest } from '../api';
 
 // REDUX Import
 import { connect } from 'react-redux';
@@ -276,7 +276,7 @@ class Products extends React.Component {
       ...state,
       isLoading: true,
     }));
-    request({ url: '/products', method: 'GET' })
+    protectedRequest({ url: '/products', method: 'GET' })
       .then(res => {
         if (res.status === 200) {
           this.setState(state => ({
@@ -292,7 +292,7 @@ class Products extends React.Component {
 
   createProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: '/products',
       method: 'POST',
       data: currentProduct,
@@ -308,7 +308,7 @@ class Products extends React.Component {
 
   updateProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: `/products/${currentProduct._id}`,
       method: 'PATCH',
       data: currentProduct,
@@ -324,7 +324,7 @@ class Products extends React.Component {
 
   deleteProduct = () => {
     const { currentProduct } = this.state;
-    request({
+    protectedRequest({
       url: `/products/${currentProduct._id}`,
       method: 'DELETE',
     })
